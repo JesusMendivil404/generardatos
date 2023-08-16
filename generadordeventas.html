@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de ventas</title>
+    <script>
+        var salida = "";
+        var ventas = 10000;
+        var productos = [
+            ["1", "Cafe", "$20"],
+            ["2", "Sabritas", "$20"],
+            ["3", "Galletas", "$20"],
+            ["4", "Tecate roja", "$20"],
+            ["5", "Sky", "$20"],
+            ["6", "Carne para asar", "$20"],
+            ["7", "Salchichas", "$20"],
+            ["8", "Bolillo", "$20"],
+            ["9", "Agua", "$20"],
+            ["10", "Soda", "$20"],
+            ["11", "Monster", "$20"],
+            ["12", "Chocolate", "$20"],
+            ["13", "Chicles", "$20"],
+            ["14", "Halls", "$20"],
+            ["15", "Paleta pallaso", "$20"],
+            ["16", "Papas fritas", "$5"],
+            ["17", "Nachos con queso", "$11"],
+            ["18", "Alitas de pollo", "$16"],
+            ["19", "Sopa de tomate", "$8"],
+            ["20", "Tacos de carne asada", "$13"],
+            ["21", "Ceviche de camarón", "$22"],
+            ["22", "Pasta Alfredo", "$17"],
+            ["23", "Sushi variado", "$28"],
+            ["24", "Rollitos de primavera", "$9"],
+            ["25", "Enchiladas de pollo", "$12"],
+            ["26", "Burrito de carne", "$14"],
+            ["27", "Empanadas de queso", "$6"],
+            ["28", "Dona glaseada", "$3"],
+            ["29", "Croissant de chocolate", "$4"],
+            ["30", "Muffin de arándanos", "$5"],
+            ["31", "Brownie de nueces", "$4"],
+            ["32", "Tarta de manzana", "$8"],
+            ["33", "Pastel de zanahoria", "$9"],
+            ["34", "Cupcake de vainilla", "$3"],
+            ["35", "Crepe de frutas", "$6"],
+            ["36", "Churros con chocolate", "$7"],
+            ["37", "Sopa de miso", "$5"],
+            ["38", "Arroz frito", "$10"],
+            ["39", "Pollo teriyaki", "$13"],
+            ["40", "Salmón a la parrilla", "$20"],
+            ["41", "Poke Bowl", "$16"],
+            ["42", "Ramen japonés", "$11"],
+            ["43", "Ensalada de quinoa", "$9"],
+            ["44", "Wrap de pollo", "$8"],
+            ["45", "Ensalada de frutas", "$6"],
+            ["46", "Tiramisú", "$7"],
+            ["47", "Cheesecake de fresa", "$10"],
+            ["48", "Flan de caramelo", "$5"],
+            ["49", "Helado de chocolate", "$4"],
+            ["50", "Café con leche", "$6"]
+        ];
+        function generarNumeroAleatorio(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+        function generarfechas() {
+            return (
+                new Date(new Date(2000, 1, 1).getTime() + Math.random()
+                    * (new Date().getTime() - new Date(2000, 1, 1).getTime())))
+                .toISOString().split('T')[0];
+        }
+
+        function generarhoras() {
+            return (
+                new Date(new Date(2000, 1, 1).getTime() + Math.random()
+                    * (new Date().getTime() - new Date(2000, 1, 1).getTime())))
+                .toISOString().split('T')[1].split('.')[0];
+        }
+
+        function generar() {
+
+            salida = `CREATE DATABASE IF NOT EXISTS POS;<br> USE POS;<br>DROP TABLE IF EXISTS ventas;<br>CREATE TABLE IF NOT EXISTS ventas(id INT(10) NOT NULL UNIQUE, fecha DATE NOT NULL, hora TIME NOT NULL);<br> INSERT INTO ventas VALUES`;
+            for (var i = 1; i < ventas; i++) {
+
+
+                if (i == ventas - 1) {
+                    salida += "('" + i + "','" + generarfechas() + "','" + generarhoras() + "" + "');<br>";
+
+                }
+
+                else {
+                    salida += "('" + i + "','" + generarfechas() + "','" + generarhoras() + "'),<br>";
+                }
+            }
+
+            salida += "INSERT INTO ventas_detail VALUES <br>";
+
+            for (let i = 1; i < ventas; i++) { 
+                var numero = generarNumeroAleatorio(1, 10);
+                for (let j = 1; j  < numero + 1; j++) {
+                    var a = generarNumeroAleatorio (1,49);
+                 salida += "('" + i + "','" + productos[a][1]+ "'," + "'" +productos[a][2] + "')," +"<br>";
+                }
+                salida+= "<br>";
+            }
+                salida=salida.slice(0,-9)+";";
+            document.getElementById('salida').innerHTML = salida;
+        }
+        function generarArchivo() {
+            var file = document.createElement('a');
+            var sql = salida.replace(/<br>/g, '\n').trim();
+            file.setAttribute('href', 'data:text/plane;charset=utf-8,' + encodeURIComponent(sql));
+            file.setAttribute('download', 'POS.sql');
+            file.style.display = 'none';
+            document.body.appendChild(file);
+            file.click();
+            document.body.removeChild(file);
+        }
+    </script>
+</head>
+
+<body>
+    <h1>Generador aleatorio de ventas</h1>
+    <input type="button" value="Generar Datos" onclick="generar()">
+    <input type="button" value="Generar archivo SQL" onclick="generarArchivo()">
+    <p id="salida"></p>
+</body>
+
+</html>
